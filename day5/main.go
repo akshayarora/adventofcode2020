@@ -3,6 +3,7 @@ package main
 import "bufio"
 import "fmt"
 import "os"
+import "sort"
 
 func check(e error) {
 	if e != nil {
@@ -29,7 +30,8 @@ func LoadInput() []string {
 func main() {
 	rawData := LoadInput()
 	// ValidateKnownInputs()
-	ComputeHighestSeatId(rawData)
+	// ComputeHighestSeatId(rawData)
+	ComputeMySeatId(rawData)
 }
 
 func ComputeHighestSeatId(rawData []string) {
@@ -42,6 +44,22 @@ func ComputeHighestSeatId(rawData []string) {
 		}
 	}
 	fmt.Printf("High Seat Id %d\n", highSeatId)
+}
+
+func ComputeMySeatId(rawData []string) {
+	var allSeats []int
+	for _, code := range rawData {
+		row, col := ParseBoardingPass(code)
+		seatId := ComputeSeatId(row, col)
+		allSeats = append(allSeats, seatId)
+	}
+	sort.Ints(allSeats)
+	for i, v := range allSeats {
+		if v+2 == allSeats[i+1] {
+			fmt.Printf("My SeatID is %d", v+1)
+			break
+		}
+	}
 }
 
 func ValidateKnownInputs() {
