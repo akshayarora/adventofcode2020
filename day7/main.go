@@ -14,7 +14,7 @@ func main() {
 	color := "shiny gold"
 	ParentsForBag(color, &m)
 	fmt.Printf("%d bags can contain a %s bag\n", len(m), color)
-	count := BagCountWithin(color)
+	count := BagCountWithin(rules[color])
 	fmt.Printf("%s bag contains %d other bags\n", color, count)
 	fmt.Println("done")
 }
@@ -117,11 +117,10 @@ func ParentsForBag(color string, m *map[string]Bag) {
 	}
 }
 
-func BagCountWithin(color string) int {
+func BagCountWithin(bag Bag) int {
 	count := 0
-	_, ok := rules[color]
-	if !ok {
-		return -1
+	for _, c := range *bag.Contents {
+		count += c.Quantity + c.Quantity*BagCountWithin(*c.Bag)
 	}
 	return count
 }
