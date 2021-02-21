@@ -5,10 +5,19 @@ import "fmt"
 import "os"
 import "strconv"
 
+var part1 = 731031916
+
 func main() {
 	rawData := LoadInput("day9.input")
 	data := ConvertToInt(rawData)
-	FindWeakness(25, data)
+	weakness := FindWeakness(25, data)
+	if weakness != part1 {
+		fmt.Printf("Weakness expected %d, found %d\n", part1, weakness)
+		return
+	}
+	fmt.Printf("Number %d weakness\n", weakness)
+	encWeakness := FindEncryptionWeakness(data, weakness)
+	fmt.Printf("Encryption Weakness = %d\n", encWeakness)
 	// groupedData := GroupInput(rawData)
 	fmt.Println("done")
 }
@@ -60,18 +69,18 @@ func ConvertToInt(input []string) []int {
 	return output
 }
 
-func FindWeakness(preamble int, data []int) {
+func FindWeakness(preamble int, data []int) int {
 	for i := preamble; i < len(data); i++ {
 		j := data[i]
 		slice := data[i-preamble : i]
 		k, l, ok := FindComponentsForSum(slice, j)
 		if !ok {
-			fmt.Printf("Number %d doesn't match\n", j)
-			break
+			return j
 		} else {
 			fmt.Printf("[%d/%d] %d = %d + %d\n", i, len(data), j, k, l)
 		}
 	}
+	return -1
 }
 
 func FindComponentsForSum(data []int, sum int) (int, int, bool) {
@@ -83,4 +92,25 @@ func FindComponentsForSum(data []int, sum int) (int, int, bool) {
 		}
 	}
 	return 0, 0, false
+}
+
+func FindEncryptionWeakness(data []int, weakness int) int {
+	for i := 0; i < len(data)-1; i++ {
+		min := data[i]
+		max := data[i]
+		sum := data[i]
+		for j := i + 1; j < len(data); j++ {
+			sum += data[j]
+			if min > data[j] {
+				min = data[j]
+			}
+			if max < data[j] {
+				max = data[j]
+			}
+			if weakness == sum {
+				return min + max
+			}
+		}
+	}
+	return -1
 }
